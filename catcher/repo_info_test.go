@@ -9,8 +9,16 @@ import (
 	"time"
 )
 
-func setupApiServer(f http.HandlerFunc) {
-	server := httptest.NewServer(f)
+func setupApiServer(requestedUrl *string, data interface{}) {
+	f := func(w http.ResponseWriter, r *http.Request) {
+		*requestedUrl = r.URL.String()
+		dataEncoded, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+		w.Write(dataEncoded)
+	}
+	server := httptest.NewServer(http.HandlerFunc(f))
 	GithubApiUrl = server.URL
 }
 
@@ -23,14 +31,7 @@ func TestRepoRequest(t *testing.T) {
 	repo.Name = "somerepo"
 	repo.Owner.Login = "someuser"
 
-	setupApiServer(func(w http.ResponseWriter, r *http.Request) {
-		requestedUrl = r.URL.String()
-		repoEncoded, err := json.Marshal(repo)
-		if err != nil {
-			panic(err)
-		}
-		w.Write(repoEncoded)
-	})
+	setupApiServer(&requestedUrl, repo)
 
 	repo2, err := RequestRepoInfo(repo.Owner.Login, repo.Name)
 
@@ -88,14 +89,7 @@ func TestCommitsRequest(t *testing.T) {
 		commits[i].Commit.Author.Date = time.Now().Add(time.Duration(-i) * time.Hour)
 	}
 
-	setupApiServer(func(w http.ResponseWriter, r *http.Request) {
-		requestedUrl = r.URL.String()
-		commitEncoded, err := json.Marshal(commits)
-		if err != nil {
-			panic(err)
-		}
-		w.Write(commitEncoded)
-	})
+	setupApiServer(&requestedUrl, commits)
 
 	commits2, err := repo.RequestCommits(page)
 	assertFatal(t, "Error must be nil", err == nil)
