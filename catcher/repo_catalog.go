@@ -15,12 +15,16 @@ type RepoEntry struct {
 	Username string
 	Reponame string
 	Titles   [8]string
+	TitleSet bool
 }
 
 type RepoCatalog []*RepoEntry
 
 func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
-	var titlesMap [8]string
+	var (
+		titlesMap [8]string
+		titleSet  bool
+	)
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -34,7 +38,8 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 		}
 
 		if user, name, ok := MdRepoItem(line); ok && isMdListItem(line) {
-			list = append(list, &RepoEntry{user, name, titlesMap})
+			list = append(list, &RepoEntry{user, name, titlesMap, titleSet})
+			titleSet = false
 			continue
 		}
 
@@ -43,6 +48,7 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 			for i := level; i < len(titlesMap); i++ {
 				titlesMap[i] = ""
 			}
+			titleSet = true
 			continue
 		}
 

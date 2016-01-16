@@ -96,11 +96,15 @@ func TestRepoListParsing(t *testing.T) {
 		34,
 	)
 
-	assertEntry := func(what string, e *RepoEntry, user string, name string, titles ...string) {
+	assertEntry := func(what string, e *RepoEntry, user string, name string, titleSet bool, titles ...string) {
 		t.Logf("Testing %v: %v", what, e)
 		assert(t,
 			fmt.Sprintf("%v must be %v/%v", what, user, name),
 			e.Username == user && e.Reponame == name,
+		)
+		assert(t,
+			fmt.Sprintf("%v must have titleSet == %v", what, titleSet),
+			e.TitleSet == titleSet,
 		)
 		assert(t,
 			fmt.Sprintf("%v must have %v titles", what, len(titles)),
@@ -119,6 +123,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"first entry", list[0], "user", "package1",
+		true,
 		"Site Header",
 		"Simple category",
 		"", "", "", "",
@@ -128,6 +133,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry under subheader", list[4], "user", "package2",
+		false,
 		"Site Header",
 		"Category with subheaders",
 		"Subheader 1",
@@ -138,6 +144,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry under third category", list[11], "user", "package3",
+		false,
 		"Site Header",
 		"Simple category after complex one",
 		"", "", "", "",
@@ -147,6 +154,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry under section", list[15], "user", "package1",
+		true,
 		"Site Header",
 		"Category with two sections",
 		"", "", "", "",
@@ -156,6 +164,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry under list section", list[19], "user", "package2",
+		false,
 		"Site Header",
 		"Category with list sections",
 		"", "", "", "",
@@ -165,6 +174,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry under second simple cat", list[26], "user", "package3",
+		false,
 		"Site Header",
 		"Simple category after complex one",
 		"", "", "", "",
@@ -174,6 +184,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry with broken indentation", list[30], "user", "package4",
+		false,
 		"Site Header",
 		"Category with broken indentation",
 		"", "", "", "",
@@ -183,6 +194,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertEntry(
 		"entry after unparsed one", list[31], "user", "package1",
+		true,
 		"Another FIRST LEVEL header",
 		"Category",
 		"Subcategory",
