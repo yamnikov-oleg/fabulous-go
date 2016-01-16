@@ -9,7 +9,8 @@ import (
 
 var (
 	HttpClient = &http.Client{}
-	ServerUrl  = "https://api.github.com"
+	// No trailing slash
+	GithubApiUrl = "https://api.github.com"
 )
 
 type Repo struct {
@@ -17,24 +18,28 @@ type Repo struct {
 }
 
 func ParseRepo(username string, reponame string) (*Repo, error) {
-	url := fmt.Sprintf("%v/%v/%v", ServerUrl, username, reponame)
+	// Form a request
+	url := fmt.Sprintf("%v/%v/%v", GithubApiUrl, username, reponame)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Add("Accept", "application/vnd.github.v3+json")
 
+	// Perform the request
 	resp, err := HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
+	// Buffer the response
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	// Unmarshal the response
 	repo := &Repo{}
 	err = json.Unmarshal(data, repo)
 	if err != nil {

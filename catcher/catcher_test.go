@@ -8,9 +8,9 @@ import (
 	"testing"
 )
 
-func SetupServer(f http.HandlerFunc) {
+func setupApiServer(f http.HandlerFunc) {
 	server := httptest.NewServer(f)
-	ServerUrl = server.URL
+	GithubApiUrl = server.URL
 }
 
 func expect(t *testing.T, logText string, actual interface{}, expected interface{}) {
@@ -38,7 +38,7 @@ func TestRepoParsing(t *testing.T) {
 			StargazersCount: 25565,
 		}
 	)
-	SetupServer(func(w http.ResponseWriter, r *http.Request) {
+	setupApiServer(func(w http.ResponseWriter, r *http.Request) {
 		requestedUrl = r.URL.String()
 		repoEncoded, err := json.Marshal(repo)
 		if err != nil {
