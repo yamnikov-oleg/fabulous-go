@@ -97,7 +97,6 @@ func TestRepoListParsing(t *testing.T) {
 	)
 
 	assertEntry := func(what string, e *RepoEntry, user string, name string, titleSet bool, titles ...string) {
-		t.Logf("Testing %v: %v", what, e)
 		assert(t,
 			fmt.Sprintf("%v must be %v/%v", what, user, name),
 			e.Username == user && e.Reponame == name,
