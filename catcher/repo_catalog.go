@@ -147,7 +147,3 @@ func MdRepoItem(text string) (username string, reponame string, ok bool) {
 	}
 	return match[1], match[2], true
 }
-
-func main() {
-
-}
