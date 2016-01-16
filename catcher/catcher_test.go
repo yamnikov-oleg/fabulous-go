@@ -77,40 +77,16 @@ func TestRepoParsing(t *testing.T) {
 func TestMarkdownHeaderParsing(t *testing.T) {
 	mustParse := func(what string, level int, input string, expected string) {
 		header, lvl, ok := MdHeader(input)
-		expect(t,
-			"Must parse "+what,
-			ok,
-			true,
-		)
-		expect(t,
-			"Must parse "+what,
-			lvl,
-			level,
-		)
-		expect(t,
-			"Must parse "+what,
-			header,
-			strings.TrimSpace(expected),
-		)
+		expect(t, "Must parse "+what, ok, true)
+		expect(t, "Must parse "+what, lvl, level)
+		expect(t, "Must parse "+what, header, strings.TrimSpace(expected))
 	}
 
 	mustNotParse := func(what string, input string) {
 		header, lvl, ok := MdHeader(input)
-		expect(t,
-			"Must not parse "+what,
-			ok,
-			false,
-		)
-		expect(t,
-			"Must not parse "+what,
-			header,
-			"",
-		)
-		expect(t,
-			"Must not parse "+what,
-			lvl,
-			0,
-		)
+		expect(t, "Must not parse "+what, ok, false)
+		expect(t, "Must not parse "+what, header, "")
+		expect(t, "Must not parse "+what, lvl, 0)
 	}
 
 	mustNotParse("empty string", "")
