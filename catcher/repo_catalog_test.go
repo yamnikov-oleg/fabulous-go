@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -78,23 +77,8 @@ func TestRepoItemParsing(t *testing.T) {
 	mustNotParse("no repo github link (more path segments)", "(http://github.com/moi/monrepo/extra)")
 }
 
-func tryOpen(pathlist ...string) (f *os.File, err error) {
-	if len(pathlist) == 0 {
-		return nil, errors.New("path list empty")
-	}
-
-	for _, path := range pathlist {
-		f, err = os.Open(path)
-		if err == nil {
-			return
-		}
-	}
-	return
-}
-
 func TestRepoListParsing(t *testing.T) {
-	// Try opening in several paths, because wording dir may change
-	file, err := tryOpen("repo_list_test_sample.md", "catcher/repo_list_test_sample.md")
+	file, err := os.Open("repo_list_test_sample.md")
 	if err != nil {
 		panic(err)
 	}
