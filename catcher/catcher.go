@@ -145,9 +145,9 @@ type RepoEntry struct {
 	Titles   [8]string
 }
 
-type RepoList []*RepoEntry
+type RepoCatalog []*RepoEntry
 
-func ReadRepoList(r io.Reader) (list RepoList, err error) {
+func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 	var titlesMap [8]string
 
 	scanner := bufio.NewScanner(r)

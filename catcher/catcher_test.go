@@ -174,7 +174,7 @@ func TestRepoListParsing(t *testing.T) {
 	}
 	defer file.Close()
 
-	list, err := ReadRepoList(file)
+	list, err := ReadRepoCatalog(file)
 
 	assert(t,
 		"Error must be nil",
