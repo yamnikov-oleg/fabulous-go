@@ -92,3 +92,40 @@ func (r *RepoInfo) RequestCommits(page int) (list []*CommitInfo, err error) {
 
 	return
 }
+
+type ParticipationStats struct {
+	All   []int `json:"all"`
+	Owner []int `json:"owner"`
+}
+
+func (r *RepoInfo) RequestParticipationStats() (*ParticipationStats, error) {
+	// Form a request
+	url := fmt.Sprintf("%v/%v/%v/stats/participation", GithubApiUrl, r.Owner.Login, r.Name)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+
+	// Perform the request
+	resp, err := HttpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Buffer the response
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal the response
+	stats := &ParticipationStats{}
+	err = json.Unmarshal(data, stats)
+	if err != nil {
+		return nil, err
+	}
+
+	return stats, nil
+}

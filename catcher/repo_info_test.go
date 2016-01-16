@@ -108,3 +108,40 @@ func TestCommitsRequest(t *testing.T) {
 		)
 	}
 }
+
+func TestParticipationStatsRequest(t *testing.T) {
+	var (
+		requestedUrl string
+		repo         = &RepoInfo{}
+		stats        = &ParticipationStats{
+			All:   []int{78, 8, 12, 51, 33, 23},
+			Owner: []int{99, 123, 54, 234, 11, 0, 0, 0},
+		}
+	)
+	repo.Name = "somerepo"
+	repo.Owner.Login = "someuser"
+
+	setupApiServer(&requestedUrl, stats)
+	stats2, err := repo.RequestParticipationStats()
+
+	assert(t, "Error must be nil", err == nil)
+	expect(t,
+		"Requested url must be correct",
+		requestedUrl, fmt.Sprintf("/%v/%v/stats/participation", repo.Owner.Login, repo.Name),
+	)
+	assertFatal(t, "Stats must not be nil", stats2 != nil)
+
+	expect(t, "Stats all commits count must be the same", len(stats2.All), len(stats.All))
+	for i, _ := range stats2.All {
+		expect(t,
+			fmt.Sprintf("Stats commit of all #%d must be the same", i),
+			stats2.All[i], stats.All[i])
+	}
+
+	expect(t, "Stats owner commits count must be the same", len(stats2.Owner), len(stats.Owner))
+	for i, _ := range stats2.Owner {
+		expect(t,
+			fmt.Sprintf("Stats commit of all #%d must be the same", i),
+			stats2.Owner[i], stats.Owner[i])
+	}
+}
