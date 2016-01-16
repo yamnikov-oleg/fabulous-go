@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -29,14 +28,8 @@ func RetrieveJson(url string, outData interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	// Buffer the response
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
 	// Unmarshal the response
-	err = json.Unmarshal(data, outData)
+	err = json.NewDecoder(resp.Body).Decode(outData)
 	if err != nil {
 		return err
 	}
