@@ -22,6 +22,32 @@ func setupApiServer(requestedUrl *string, data interface{}) {
 	GithubApiUrl = server.URL
 }
 
+func setupErrorServer(code int, data interface{}) {
+	f := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(code)
+		if data == nil {
+			return
+		}
+		dataEncoded, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+		w.Write(dataEncoded)
+	}
+	server := httptest.NewServer(http.HandlerFunc(f))
+	GithubApiUrl = server.URL
+}
+
+func TestRetrieveJson(t *testing.T) {
+	setupErrorServer(http.StatusNotFound, nil)
+	err := RetrieveJson(GithubApiUrl+"/url", new(int))
+	assert(t, "Error must be non-nil", err != nil)
+
+	setupErrorServer(http.StatusNotFound, 12)
+	err = RetrieveJson(GithubApiUrl+"/url", new(int))
+	assert(t, "Error must be non-nil", err != nil)
+}
+
 func TestRepoRequest(t *testing.T) {
 	var (
 		requestedUrl string

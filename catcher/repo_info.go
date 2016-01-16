@@ -27,6 +27,9 @@ func RetrieveJson(url string, outData interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("status code not OK (%v)", resp.Status)
+	}
 
 	// Unmarshal the response
 	err = json.NewDecoder(resp.Body).Decode(outData)
