@@ -91,38 +91,36 @@ func TestRepoListParsing(t *testing.T) {
 		err == nil,
 	)
 	expectFatal(t,
-		"Repo list must have correct length",
+		"Block list must have correct length",
 		len(list),
-		34,
+		11,
 	)
 
-	assertEntry := func(what string, e *RepoEntry, user string, name string, titleSet bool, titles ...string) {
-		assert(t,
-			fmt.Sprintf("%v must be %v/%v", what, user, name),
-			e.Username == user && e.Reponame == name,
+	assertBlock := func(what string, b *RepoEntryBlock, entriesCount int, titles ...string) {
+		expectFatal(t,
+			fmt.Sprintf("%v must have correct number of entries", what),
+			len(b.Entries), entriesCount,
 		)
-		assert(t,
-			fmt.Sprintf("%v must have titleSet == %v", what, titleSet),
-			e.TitleSet == titleSet,
-		)
-		assert(t,
-			fmt.Sprintf("%v must have %v titles", what, len(titles)),
-			len(e.Titles) == len(titles),
-		)
-		if len(e.Titles) != len(titles) {
-			return
+		for i, _ := range b.Entries {
+			expect(t,
+				fmt.Sprintf("%v's %dth entry must be correct", what, i),
+				*b.Entries[i], RepoEntry{"user", fmt.Sprintf("package%v", i+1)},
+			)
 		}
+		expectFatal(t,
+			fmt.Sprintf("%v must have correct number of titles", what),
+			len(b.Titles), len(titles),
+		)
 		for i, _ := range titles {
 			assert(t,
-				fmt.Sprintf("%v %dth title must be %v", what, i, titles[i]),
-				e.Titles[i] == titles[i],
+				fmt.Sprintf("%v's %dth title must be %v", what, i, titles[i]),
+				b.Titles[i] == titles[i],
 			)
 		}
 	}
 
-	assertEntry(
-		"first entry", list[0], "user", "package1",
-		true,
+	assertBlock(
+		"first block", list[0], 3,
 		"Site Header",
 		"Simple category",
 		"", "", "", "",
@@ -130,9 +128,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry under subheader", list[4], "user", "package2",
-		false,
+	assertBlock(
+		"block under subheader", list[1], 3,
 		"Site Header",
 		"Category with subheaders",
 		"Subheader 1",
@@ -141,9 +138,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry under third category", list[11], "user", "package3",
-		false,
+	assertBlock(
+		"block under third category", list[3], 3,
 		"Site Header",
 		"Simple category after complex one",
 		"", "", "", "",
@@ -151,9 +147,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry under section", list[15], "user", "package1",
-		true,
+	assertBlock(
+		"block under section", list[5], 3,
 		"Site Header",
 		"Category with two sections",
 		"", "", "", "",
@@ -161,9 +156,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry under list section", list[19], "user", "package2",
-		false,
+	assertBlock(
+		"block under list section", list[6], 3,
 		"Site Header",
 		"Category with list sections",
 		"", "", "", "",
@@ -171,9 +165,8 @@ func TestRepoListParsing(t *testing.T) {
 		"Section 1 as list item",
 	)
 
-	assertEntry(
-		"entry under second simple cat", list[26], "user", "package3",
-		false,
+	assertBlock(
+		"block under second simple cat", list[8], 3,
 		"Site Header",
 		"Simple category after complex one",
 		"", "", "", "",
@@ -181,9 +174,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry with broken indentation", list[30], "user", "package4",
-		false,
+	assertBlock(
+		"block with broken indentation", list[9], 4,
 		"Site Header",
 		"Category with broken indentation",
 		"", "", "", "",
@@ -191,9 +183,8 @@ func TestRepoListParsing(t *testing.T) {
 		"",
 	)
 
-	assertEntry(
-		"entry after unparsed one", list[31], "user", "package1",
-		true,
+	assertBlock(
+		"block after unparsed entry", list[10], 3,
 		"Another FIRST LEVEL header",
 		"Category",
 		"Subcategory",
