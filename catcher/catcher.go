@@ -19,6 +19,10 @@ var (
 )
 
 type RepoInfo struct {
+	Name  string `json:"name"`
+	Owner struct {
+		Login string `json:"login"`
+	} `json:"owner"`
 	StargazersCount int `json:"stargazers_count"`
 }
 

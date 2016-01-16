@@ -40,13 +40,15 @@ func assertFatal(t *testing.T, logText string, cond bool) {
 	}
 }
 
-func TestRepoParsing(t *testing.T) {
+func TestRepoRequest(t *testing.T) {
 	var (
 		requestedUrl string
-		repo         = &RepoInfo{
-			StargazersCount: 25565,
-		}
+		repo         = &RepoInfo{}
 	)
+	repo.StargazersCount = 25565
+	repo.Name = "somerepo"
+	repo.Owner.Login = "someuser"
+
 	setupApiServer(func(w http.ResponseWriter, r *http.Request) {
 		requestedUrl = r.URL.String()
 		repoEncoded, err := json.Marshal(repo)
@@ -56,8 +58,7 @@ func TestRepoParsing(t *testing.T) {
 		w.Write(repoEncoded)
 	})
 
-	username, reponame := "someuser", "somerepo"
-	repo2, err := RequestRepoInfo(username, reponame)
+	repo2, err := RequestRepoInfo(repo.Owner.Login, repo.Name)
 
 	assert(t,
 		"There must be no error",
@@ -67,7 +68,7 @@ func TestRepoParsing(t *testing.T) {
 	expect(t,
 		"Request URL must form correctly",
 		requestedUrl,
-		fmt.Sprintf("/%v/%v", username, reponame),
+		fmt.Sprintf("/%v/%v", repo.Owner.Login, repo.Name),
 	)
 
 	assertFatal(t,
@@ -79,6 +80,18 @@ func TestRepoParsing(t *testing.T) {
 		"Stargazers count must be retrieved correctly",
 		repo2.StargazersCount,
 		repo.StargazersCount,
+	)
+
+	expect(t,
+		"Repo name must be retrieved correctly",
+		repo2.Name,
+		repo.Name,
+	)
+
+	expect(t,
+		"Owner name must be retrieved correctly",
+		repo2.Owner.Login,
+		repo.Owner.Login,
 	)
 }
 
