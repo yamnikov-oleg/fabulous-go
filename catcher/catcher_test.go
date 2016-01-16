@@ -108,3 +108,32 @@ func TestMarkdownHeaderParsing(t *testing.T) {
 		mustParse("normal 3rd level header with newline and spaces after newline", 3, "### "+h+"\n  ", h)
 	}
 }
+
+func TestRepoItemParsing(t *testing.T) {
+	mustParse := func(what string, input string, username string, reponame string) {
+		un, rn, ok := MdRepoItem(input)
+		expect(t, "Must parse "+what, ok, true)
+		expect(t, "Must parse "+what, un, username)
+		expect(t, "Must parse "+what, rn, reponame)
+	}
+
+	mustNotParse := func(what string, input string) {
+		un, rn, ok := MdRepoItem(input)
+		expect(t, "Must not parse "+what, ok, false)
+		expect(t, "Must not parse "+what, un, "")
+		expect(t, "Must not parse "+what, rn, "")
+	}
+
+	mustNotParse("empty string", "")
+	mustNotParse("string with no repo link", "   Some string   ")
+	mustParse("string with repo link", "(http://github.com/moi/monrepo)", "moi", "monrepo")
+	mustNotParse("string with wrong link", "(http://github.org/moi/monrepo)")
+	mustParse("string with repo link and label", "[Some label](http://github.com/moi/monrepo)", "moi", "monrepo")
+	mustParse("string with https repo link", "(https://github.com/moi/monrepo)", "moi", "monrepo")
+	mustParse("string with repo link and text", "Text before (https://github.com/moi/monrepo) text after", "moi", "monrepo")
+	mustParse("string with repo link, label and text", "* [a label](https://github.com/moi/monrepo) text after", "moi", "monrepo")
+	mustParse("string with several links", "* [wrong link](https://example.com/path/) text after [a label](https://github.com/moi/monrepo)", "moi", "monrepo")
+	mustParse("first repo if several", "* [wrong link](https://github.com/moi/monrepo) text after [a label](https://github.com/toi/tonrepo)", "moi", "monrepo")
+	mustNotParse("no repo github link (less path segments)", "(http://github.com/moi)")
+	mustNotParse("no repo github link (more path segments)", "(http://github.com/moi/monrepo/extra)")
+}

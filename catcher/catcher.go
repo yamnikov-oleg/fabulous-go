@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
 var (
 	HttpClient = &http.Client{}
 	// No trailing slash
-	GithubApiUrl = "https://api.github.com"
+	GithubApiUrl     = "https://api.github.com"
+	MdRepoLinkRegexp = regexp.MustCompile(`\(https?:\/\/github.com\/(\w+)\/(\w+)\)`)
 )
 
 type Repo struct {
@@ -78,6 +80,14 @@ func MdHeader(text string) (header string, lvl int, ok bool) {
 	ok = true
 
 	return
+}
+
+func MdRepoItem(text string) (username string, reponame string, ok bool) {
+	match := MdRepoLinkRegexp.FindStringSubmatch(text)
+	if len(match) == 0 {
+		return "", "", false
+	}
+	return match[1], match[2], true
 }
 
 func main() {
