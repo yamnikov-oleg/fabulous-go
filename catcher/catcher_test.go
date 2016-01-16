@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -71,4 +72,63 @@ func TestRepoParsing(t *testing.T) {
 		repo2.StargazersCount,
 		repo.StargazersCount,
 	)
+}
+
+func TestMarkdownHeaderParsing(t *testing.T) {
+	mustParse := func(what string, level int, input string, expected string) {
+		header, lvl, ok := MdHeader(input)
+		expect(t,
+			"Must parse "+what,
+			ok,
+			true,
+		)
+		expect(t,
+			"Must parse "+what,
+			lvl,
+			level,
+		)
+		expect(t,
+			"Must parse "+what,
+			header,
+			strings.TrimSpace(expected),
+		)
+	}
+
+	mustNotParse := func(what string, input string) {
+		header, lvl, ok := MdHeader(input)
+		expect(t,
+			"Must not parse "+what,
+			ok,
+			false,
+		)
+		expect(t,
+			"Must not parse "+what,
+			header,
+			"",
+		)
+		expect(t,
+			"Must not parse "+what,
+			lvl,
+			0,
+		)
+	}
+
+	mustNotParse("empty string", "")
+	mustNotParse("empty header", "# ")
+	mustNotParse("empty header with newline", "# \n")
+
+	testHeaders := []string{"A header", "A n o t h e r header", "Nospaces", "spaces    "}
+	for _, h := range testHeaders {
+		mustNotParse("normal text", h)
+		mustParse("normal header", 1, "# "+h, h)
+		mustParse("normal header with a lot of spaces", 4, "####    "+h, h)
+		mustNotParse("header with no space", "#"+h)
+		mustParse("normal 3rd level header", 3, "### "+h, h)
+		mustParse("normal 6th level header", 6, "###### "+h, h)
+		mustNotParse("3rd level header with no space", "###"+h)
+		mustParse("normal header with newline", 1, "# "+h+"\n", h)
+		mustParse("normal 3rd level header with newline", 3, "### "+h+"\n", h)
+		mustParse("normal 3rd level header with newline and spaces before newline", 3, "### "+h+"  \n", h)
+		mustParse("normal 3rd level header with newline and spaces after newline", 3, "### "+h+"\n  ", h)
+	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -47,6 +48,36 @@ func ParseRepo(username string, reponame string) (*Repo, error) {
 	}
 
 	return repo, nil
+}
+
+func MdHeader(text string) (header string, lvl int, ok bool) {
+	if len(text) == 0 {
+		return "", 0, false
+	}
+	if text[0] != '#' {
+		return "", 0, false
+	}
+
+	spaceIndex := strings.Index(text, " ")
+	if spaceIndex < 0 {
+		return "", 0, false
+	}
+
+	marker := text[:spaceIndex]
+	for _, rn := range marker {
+		if rn != '#' {
+			return "", 0, false
+		}
+	}
+
+	lvl = len(marker)
+	header = strings.TrimSpace(text[spaceIndex:])
+	if header == "" {
+		return "", 0, false
+	}
+	ok = true
+
+	return
 }
 
 func main() {
