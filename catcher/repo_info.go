@@ -14,6 +14,36 @@ var (
 	GithubApiUrl = "https://api.github.com"
 )
 
+func RetrieveJson(url string, outData interface{}) error {
+	// Form a request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+
+	// Perform the request
+	resp, err := HttpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Buffer the response
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal the response
+	err = json.Unmarshal(data, outData)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type RepoInfo struct {
 	Name  string `json:"name"`
 	Owner struct {
@@ -22,36 +52,11 @@ type RepoInfo struct {
 	StargazersCount int `json:"stargazers_count"`
 }
 
-func RequestRepoInfo(username string, reponame string) (*RepoInfo, error) {
-	// Form a request
+func RequestRepoInfo(username string, reponame string) (info *RepoInfo, err error) {
 	url := fmt.Sprintf("%v/%v/%v", GithubApiUrl, username, reponame)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("Accept", "application/vnd.github.v3+json")
-
-	// Perform the request
-	resp, err := HttpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Buffer the response
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal the response
-	info := &RepoInfo{}
-	err = json.Unmarshal(data, info)
-	if err != nil {
-		return nil, err
-	}
-
-	return info, nil
+	info = &RepoInfo{}
+	err = RetrieveJson(url, info)
+	return
 }
 
 type CommitInfo struct {
@@ -64,32 +69,8 @@ type CommitInfo struct {
 }
 
 func (r *RepoInfo) RequestCommits(page int) (list []*CommitInfo, err error) {
-	// Form request
 	url := fmt.Sprintf("%v/%v/%v/commits?page=%v", GithubApiUrl, r.Owner.Login, r.Name, page)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return
-	}
-
-	// Run request
-	resp, err := HttpClient.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	// Buffer response
-	buffer, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
-	// Unmarshal
-	err = json.Unmarshal(buffer, &list)
-	if err != nil {
-		return
-	}
-
+	err = RetrieveJson(url, &list)
 	return
 }
 
@@ -98,34 +79,9 @@ type ParticipationStats struct {
 	Owner []int `json:"owner"`
 }
 
-func (r *RepoInfo) RequestParticipationStats() (*ParticipationStats, error) {
-	// Form a request
+func (r *RepoInfo) RequestParticipationStats() (stats *ParticipationStats, err error) {
 	url := fmt.Sprintf("%v/%v/%v/stats/participation", GithubApiUrl, r.Owner.Login, r.Name)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("Accept", "application/vnd.github.v3+json")
-
-	// Perform the request
-	resp, err := HttpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Buffer the response
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal the response
-	stats := &ParticipationStats{}
-	err = json.Unmarshal(data, stats)
-	if err != nil {
-		return nil, err
-	}
-
-	return stats, nil
+	stats = &ParticipationStats{}
+	err = RetrieveJson(url, stats)
+	return
 }
