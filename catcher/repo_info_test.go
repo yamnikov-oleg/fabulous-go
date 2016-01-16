@@ -46,6 +46,10 @@ func TestRetrieveJson(t *testing.T) {
 	setupErrorServer(http.StatusNotFound, 12)
 	err = RetrieveJson(GithubApiUrl+"/url", new(int))
 	assert(t, "Error must be non-nil", err != nil)
+
+	setupErrorServer(http.StatusAccepted, 12)
+	err = RetrieveJson(GithubApiUrl+"/url", new(int))
+	assert(t, "Error must be nil", err == nil)
 }
 
 func TestRepoRequest(t *testing.T) {
@@ -69,7 +73,7 @@ func TestRepoRequest(t *testing.T) {
 	expect(t,
 		"Request URL must form correctly",
 		requestedUrl,
-		fmt.Sprintf("/%v/%v", repo.Owner.Login, repo.Name),
+		fmt.Sprintf("/repos/%v/%v", repo.Owner.Login, repo.Name),
 	)
 
 	assertFatal(t,
@@ -123,7 +127,7 @@ func TestCommitsRequest(t *testing.T) {
 	expect(t,
 		"Request url must be correct",
 		requestedUrl,
-		fmt.Sprintf("/%v/%v/commits?page=%v", repo.Owner.Login, repo.Name, page),
+		fmt.Sprintf("/repos/%v/%v/commits?page=%v", repo.Owner.Login, repo.Name, page),
 	)
 
 	expectFatal(t, "Commits count be correct", len(commits2), comCount)
@@ -153,7 +157,7 @@ func TestParticipationStatsRequest(t *testing.T) {
 	assert(t, "Error must be nil", err == nil)
 	expect(t,
 		"Requested url must be correct",
-		requestedUrl, fmt.Sprintf("/%v/%v/stats/participation", repo.Owner.Login, repo.Name),
+		requestedUrl, fmt.Sprintf("/repos/%v/%v/stats/participation", repo.Owner.Login, repo.Name),
 	)
 	assertFatal(t, "Stats must not be nil", stats2 != nil)
 

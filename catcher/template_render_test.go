@@ -11,7 +11,7 @@ import (
 func TestTemplateDataComposition(t *testing.T) {
 	entry := &RepoEntry{Username: "huares", Reponame: "mybolt"}
 
-	infoUrl := fmt.Sprintf("/%v/%v", entry.Username, entry.Reponame)
+	infoUrl := fmt.Sprintf("/repos/%v/%v", entry.Username, entry.Reponame)
 	infoRequested := false
 	info := &RepoInfo{}
 	info.Owner.Login = entry.Username

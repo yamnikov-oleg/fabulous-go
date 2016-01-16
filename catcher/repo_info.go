@@ -27,8 +27,8 @@ func RetrieveJson(url string, outData interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("status code not OK (%v)", resp.Status)
+	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusServiceUnavailable {
+		return fmt.Errorf("`GET %v` -> status code not OK (%v)", url, resp.Status)
 	}
 
 	// Unmarshal the response
@@ -49,7 +49,7 @@ type RepoInfo struct {
 }
 
 func RequestRepoInfo(username string, reponame string) (info *RepoInfo, err error) {
-	url := fmt.Sprintf("%v/%v/%v", GithubApiUrl, username, reponame)
+	url := fmt.Sprintf("%v/repos/%v/%v", GithubApiUrl, username, reponame)
 	info = &RepoInfo{}
 	err = RetrieveJson(url, info)
 	return
@@ -65,7 +65,7 @@ type CommitInfo struct {
 }
 
 func (r *RepoInfo) RequestCommits(page int) (list []*CommitInfo, err error) {
-	url := fmt.Sprintf("%v/%v/%v/commits?page=%v", GithubApiUrl, r.Owner.Login, r.Name, page)
+	url := fmt.Sprintf("%v/repos/%v/%v/commits?page=%v", GithubApiUrl, r.Owner.Login, r.Name, page)
 	err = RetrieveJson(url, &list)
 	return
 }
@@ -76,7 +76,7 @@ type ParticipationStats struct {
 }
 
 func (r *RepoInfo) RequestParticipationStats() (stats *ParticipationStats, err error) {
-	url := fmt.Sprintf("%v/%v/%v/stats/participation", GithubApiUrl, r.Owner.Login, r.Name)
+	url := fmt.Sprintf("%v/repos/%v/%v/stats/participation", GithubApiUrl, r.Owner.Login, r.Name)
 	stats = &ParticipationStats{}
 	err = RetrieveJson(url, stats)
 	return
