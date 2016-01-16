@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
@@ -56,6 +57,45 @@ func RequestRepoInfo(username string, reponame string) (*RepoInfo, error) {
 	}
 
 	return info, nil
+}
+
+type CommitInfo struct {
+	Sha    string `json:"sha"`
+	Commit struct {
+		Author struct {
+			Date time.Time `json:"date"`
+		} `json:"author"`
+	} `json:"commit"`
+}
+
+func (r *RepoInfo) RequestCommits(page int) (list []*CommitInfo, err error) {
+	// Form request
+	url := fmt.Sprintf("%v/%v/%v/commits?page=%v", GithubApiUrl, r.Owner.Login, r.Name, page)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return
+	}
+
+	// Run request
+	resp, err := HttpClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	// Buffer response
+	buffer, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	// Unmarshal
+	err = json.Unmarshal(buffer, &list)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func MdHeaderItem(text string) (header string, lvl int, ok bool) {

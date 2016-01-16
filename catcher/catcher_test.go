@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func setupApiServer(f http.HandlerFunc) {
@@ -18,13 +19,13 @@ func setupApiServer(f http.HandlerFunc) {
 
 func expect(t *testing.T, logText string, actual interface{}, expected interface{}) {
 	if actual != expected {
-		t.Errorf("%v. Expected %#v, got %#v.", logText, expected, actual)
+		t.Errorf("%v. Expected %v, got %v.", logText, expected, actual)
 	}
 }
 
 func expectFatal(t *testing.T, logText string, actual interface{}, expected interface{}) {
 	if actual != expected {
-		t.Fatalf("%v. Expected %#v, got %#v.", logText, expected, actual)
+		t.Fatalf("%v. Expected %v, got %v.", logText, expected, actual)
 	}
 }
 
@@ -292,4 +293,50 @@ func TestRepoListParsing(t *testing.T) {
 		"", "", "", "", "",
 	)
 
+}
+
+func TestCommitsRequest(t *testing.T) {
+	var (
+		requestedUrl string
+		repo         = &RepoInfo{}
+		comCount     = 20
+		commits      []*CommitInfo
+		page         = 45
+	)
+
+	repo.Name = "somerepo"
+	repo.Owner.Login = "someuser"
+
+	commits = make([]*CommitInfo, comCount)
+	for i, _ := range commits {
+		commits[i] = &CommitInfo{}
+		commits[i].Sha = fmt.Sprintf("hailstalin%v", i)
+		commits[i].Commit.Author.Date = time.Now().Add(time.Duration(-i) * time.Hour)
+	}
+
+	setupApiServer(func(w http.ResponseWriter, r *http.Request) {
+		requestedUrl = r.URL.String()
+		commitEncoded, err := json.Marshal(commits)
+		if err != nil {
+			panic(err)
+		}
+		w.Write(commitEncoded)
+	})
+
+	commits2, err := repo.RequestCommits(page)
+	assertFatal(t, "Error must be nil", err == nil)
+
+	expect(t,
+		"Request url must be correct",
+		requestedUrl,
+		fmt.Sprintf("/%v/%v/commits?page=%v", repo.Owner.Login, repo.Name, page),
+	)
+
+	expectFatal(t, "Commits count be correct", len(commits2), comCount)
+	for i, _ := range commits2 {
+		expect(t,
+			fmt.Sprintf("Commit #%v must be the same", i),
+			*commits2[i], *commits[i],
+		)
+	}
 }
