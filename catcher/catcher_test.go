@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -17,6 +19,12 @@ func setupApiServer(f http.HandlerFunc) {
 func expect(t *testing.T, logText string, actual interface{}, expected interface{}) {
 	if actual != expected {
 		t.Errorf("%v. Expected %#v, got %#v.", logText, expected, actual)
+	}
+}
+
+func expectFatal(t *testing.T, logText string, actual interface{}, expected interface{}) {
+	if actual != expected {
+		t.Fatalf("%v. Expected %#v, got %#v.", logText, expected, actual)
 	}
 }
 
@@ -142,4 +150,70 @@ func TestRepoItemParsing(t *testing.T) {
 	mustParse("first repo if several", "* [wrong link](https://github.com/moi/monrepo) text after [a label](https://github.com/toi/tonrepo)", "moi", "monrepo")
 	mustNotParse("no repo github link (less path segments)", "(http://github.com/moi)")
 	mustNotParse("no repo github link (more path segments)", "(http://github.com/moi/monrepo/extra)")
+}
+
+func tryOpen(pathlist ...string) (f *os.File, err error) {
+	if len(pathlist) == 0 {
+		return nil, errors.New("path list empty")
+	}
+
+	for _, path := range pathlist {
+		f, err = os.Open(path)
+		if err == nil {
+			return
+		}
+	}
+	return
+}
+
+func TestRepoListParsing(t *testing.T) {
+	// Try opening in several paths, because wording dir may change
+	file, err := tryOpen("repo_list_test_sample.md", "catcher/repo_list_test_sample.md")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	list, err := ReadRepoList(file)
+
+	assert(t,
+		"Error must be nil",
+		err == nil,
+	)
+	expectFatal(t,
+		"Repo list must have correct length",
+		len(list),
+		34,
+	)
+
+	assertEntry := func(what string, e *RepoEntry, user string, name string, titles ...string) {
+		t.Logf("Testing %v: %v", what, e)
+		assert(t,
+			fmt.Sprintf("%v must be %v/%v", what, user, name),
+			e.Username == user && e.Reponame == name,
+		)
+		assert(t,
+			fmt.Sprintf("%v must have %v titles", what, len(titles)),
+			len(e.Titles) == len(titles),
+		)
+		if len(e.Titles) != len(titles) {
+			return
+		}
+		for i, _ := range titles {
+			assert(t,
+				fmt.Sprintf("%v %dth title must be %v", what, i, titles[i]),
+				e.Titles[i] == titles[i],
+			)
+		}
+	}
+
+	assertEntry("first entry", list[0], "user", "package1", "Site Header", "Simple category", "Sample description")
+	assertEntry("entry under subheader", list[4], "user", "package2", "Site Header", "Category with subheaders", "Subheader 1", "Description")
+	assertEntry("entry under third category", list[11], "user", "package3", "Site Header", "Simple category after complex one", "Description")
+	assertEntry("entry under section", list[15], "user", "package1", "Site Header", "Category with two sections", "Section 2 as description")
+	assertEntry("entry under list section", list[19], "user", "package2", "Site Header", "Category with list sections", "Common description", "Section 1 as list item")
+	assertEntry("entry under second simple cat", list[26], "user", "package3", "Site Header", "Simple category after complex one", "Description")
+	assertEntry("entry with broken indentation", list[30], "user", "package4", "Site Header", "Category with broken indentation", "Description")
+	assertEntry("entry with broken indentation", list[30], "user", "package4", "Site Header", "Category with broken indentation", "Description")
+	assertEntry("entry after unparsed one", list[31], "user", "package1", "Another FIRST LEVEL header", "Category", "Subcategory")
 }

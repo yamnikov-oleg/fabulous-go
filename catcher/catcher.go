@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -110,6 +112,54 @@ func MdRepoItem(text string) (username string, reponame string, ok bool) {
 		return "", "", false
 	}
 	return match[1], match[2], true
+}
+
+type RepoEntry struct {
+	Username string
+	Reponame string
+	Titles   []string
+}
+
+type RepoList []*RepoEntry
+
+func ReadRepoList(r io.Reader) (list RepoList, err error) {
+	var titlesMap [8]string
+
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if len(line) < 3 {
+			continue
+		}
+
+		user, name, ok := MdRepoItem(line)
+
+		fst, snd := line[0], line[1]
+		if (fst == '*' || fst == '+' || fst == '-') && snd == ' ' && ok {
+
+			titles := make([]string, 0, len(titlesMap))
+			for _, t := range titlesMap {
+				if t != "" {
+					titles = append(titles, t)
+				}
+			}
+			list = append(list, &RepoEntry{user, name, titles})
+			continue
+		}
+
+		header, level, ok := MdHeaderItem(line)
+		if ok {
+			titlesMap[level-1] = header
+			for i := level; i < len(titlesMap); i++ {
+				titlesMap[i] = ""
+			}
+			continue
+		}
+
+	}
+
+	err = scanner.Err()
+	return
 }
 
 func main() {
