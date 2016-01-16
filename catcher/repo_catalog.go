@@ -14,6 +14,7 @@ var (
 type RepoEntry struct {
 	Username string
 	Reponame string
+	TmplData *TmplRepoData
 }
 
 type RepoEntryBlock struct {
@@ -38,7 +39,7 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 		}
 
 		if user, name, ok := MdRepoItem(line); ok && isMdListItem(line) {
-			block.Entries = append(block.Entries, &RepoEntry{user, name})
+			block.Entries = append(block.Entries, &RepoEntry{Username: user, Reponame: name})
 			continue
 		}
 
