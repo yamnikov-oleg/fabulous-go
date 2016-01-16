@@ -20,9 +20,9 @@ More extra text [A link](https://url.com/url/path). And more.
 
 *Sample description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package__1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 ## Category with subheaders
 
@@ -30,72 +30,72 @@ More extra text [A link](https://url.com/url/path). And more.
 
 *Description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 ### Subheader 2
 
 *Description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 
 ## Simple category after complex one
 
 *Description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 ## Category with two sections
 
 *Section 1 as description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 *Section 2 as description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 ## Category with list sections
 
 *Common description*
 
 * Section 1 as list item
-    * [package1](https://github.com/user/package1) - Description to a package.
-    * [package2](https://github.com/user/package2) - Description to another package.
-    * [package3](https://github.com/user/package3) - More text!
+    * [package_1](https://github.com/user/package_1) - Description to a package.
+    * [package_2](https://github.com/user/package_2) - Description to another package.
+    * [package_3](https://github.com/user/package_3) - More text!
 
 * Section 2 as list item
-    * [package1](https://github.com/user/package1) - Description to a package.
-    * [package2](https://github.com/user/package2) - Description to another package.
-    * [package3](https://github.com/user/package3) - More text!
+    * [package_1](https://github.com/user/package_1) - Description to a package.
+    * [package_2](https://github.com/user/package_2) - Description to another package.
+    * [package_3](https://github.com/user/package_3) - More text!
 
 ## Simple category after complex one
 
 *Description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!
 
 
 ## Category with broken indentation
 
 *Description*
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-    * [package3](https://github.com/user/package3) - More text!
-    * [package4](https://github.com/user/package4) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+    * [package_3](https://github.com/user/package_3) - More text!
+    * [package_4](https://github.com/user/package_4) - More text!
 
 
 ## Category with non-list link
@@ -114,6 +114,6 @@ Extra text
 
 ### Subcategory
 
-* [package1](https://github.com/user/package1) - Description to a package.
-* [package2](https://github.com/user/package2) - Description to another package.
-* [package3](https://github.com/user/package3) - More text!
+* [package_1](https://github.com/user/package_1) - Description to a package.
+* [package_2](https://github.com/user/package_2) - Description to another package.
+* [package_3](https://github.com/user/package_3) - More text!

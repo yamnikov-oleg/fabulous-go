@@ -104,7 +104,7 @@ func TestRepoListParsing(t *testing.T) {
 		for i, _ := range b.Entries {
 			expect(t,
 				fmt.Sprintf("%v's %dth entry must be correct", what, i),
-				*b.Entries[i], RepoEntry{Username: "user", Reponame: fmt.Sprintf("package%v", i+1)},
+				*b.Entries[i], RepoEntry{Username: "user", Reponame: fmt.Sprintf("package_%v", i+1)},
 			)
 		}
 		expectFatal(t,
