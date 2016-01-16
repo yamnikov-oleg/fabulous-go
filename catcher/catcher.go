@@ -52,14 +52,36 @@ func ParseRepo(username string, reponame string) (*Repo, error) {
 	return repo, nil
 }
 
-func MdHeader(text string) (header string, lvl int, ok bool) {
-	if len(text) == 0 {
-		return "", 0, false
-	}
-	if text[0] != '#' {
+func MdHeaderItem(text string) (header string, lvl int, ok bool) {
+	text = strings.TrimSpace(text)
+
+	// There must always be at least 3 chars:
+	// [# H], [+ H], [*H*]
+	if len(text) < 3 {
 		return "", 0, false
 	}
 
+	fst, snd, lst := text[0], text[1], text[len(text)-1]
+
+	// Header
+	if fst == '#' {
+		return mdHeader(text)
+	}
+
+	// List item
+	if (fst == '*' || fst == '+' || fst == '-') && snd == ' ' {
+		return strings.TrimSpace(text[2:]), 8, true
+	}
+
+	// Bold text
+	if fst == '*' && snd != ' ' && lst == '*' {
+		return strings.TrimSpace(text[1 : len(text)-1]), 7, true
+	}
+
+	return "", 0, false
+}
+
+func mdHeader(text string) (header string, lvl int, ok bool) {
 	spaceIndex := strings.Index(text, " ")
 	if spaceIndex < 0 {
 		return "", 0, false
