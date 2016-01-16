@@ -43,7 +43,7 @@ func assertFatal(t *testing.T, logText string, cond bool) {
 func TestRepoParsing(t *testing.T) {
 	var (
 		requestedUrl string
-		repo         = &Repo{
+		repo         = &RepoInfo{
 			StargazersCount: 25565,
 		}
 	)
@@ -57,7 +57,7 @@ func TestRepoParsing(t *testing.T) {
 	})
 
 	username, reponame := "someuser", "somerepo"
-	repo2, err := ParseRepo(username, reponame)
+	repo2, err := RequestRepoInfo(username, reponame)
 
 	assert(t,
 		"There must be no error",

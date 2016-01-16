@@ -18,11 +18,11 @@ var (
 	MdRepoLinkRegexp = regexp.MustCompile(`\(https?:\/\/github.com\/(\w+)\/(\w+)\)`)
 )
 
-type Repo struct {
+type RepoInfo struct {
 	StargazersCount int `json:"stargazers_count"`
 }
 
-func ParseRepo(username string, reponame string) (*Repo, error) {
+func RequestRepoInfo(username string, reponame string) (*RepoInfo, error) {
 	// Form a request
 	url := fmt.Sprintf("%v/%v/%v", GithubApiUrl, username, reponame)
 	req, err := http.NewRequest("GET", url, nil)
@@ -45,13 +45,13 @@ func ParseRepo(username string, reponame string) (*Repo, error) {
 	}
 
 	// Unmarshal the response
-	repo := &Repo{}
-	err = json.Unmarshal(data, repo)
+	info := &RepoInfo{}
+	err = json.Unmarshal(data, info)
 	if err != nil {
 		return nil, err
 	}
 
-	return repo, nil
+	return info, nil
 }
 
 func MdHeaderItem(text string) (header string, lvl int, ok bool) {
