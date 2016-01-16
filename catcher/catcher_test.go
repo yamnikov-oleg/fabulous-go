@@ -207,13 +207,76 @@ func TestRepoListParsing(t *testing.T) {
 		}
 	}
 
-	assertEntry("first entry", list[0], "user", "package1", "Site Header", "Simple category", "Sample description")
-	assertEntry("entry under subheader", list[4], "user", "package2", "Site Header", "Category with subheaders", "Subheader 1", "Description")
-	assertEntry("entry under third category", list[11], "user", "package3", "Site Header", "Simple category after complex one", "Description")
-	assertEntry("entry under section", list[15], "user", "package1", "Site Header", "Category with two sections", "Section 2 as description")
-	assertEntry("entry under list section", list[19], "user", "package2", "Site Header", "Category with list sections", "Common description", "Section 1 as list item")
-	assertEntry("entry under second simple cat", list[26], "user", "package3", "Site Header", "Simple category after complex one", "Description")
-	assertEntry("entry with broken indentation", list[30], "user", "package4", "Site Header", "Category with broken indentation", "Description")
-	assertEntry("entry with broken indentation", list[30], "user", "package4", "Site Header", "Category with broken indentation", "Description")
-	assertEntry("entry after unparsed one", list[31], "user", "package1", "Another FIRST LEVEL header", "Category", "Subcategory")
+	assertEntry(
+		"first entry", list[0], "user", "package1",
+		"Site Header",
+		"Simple category",
+		"", "", "", "",
+		"Sample description",
+		"",
+	)
+
+	assertEntry(
+		"entry under subheader", list[4], "user", "package2",
+		"Site Header",
+		"Category with subheaders",
+		"Subheader 1",
+		"", "", "",
+		"Description",
+		"",
+	)
+
+	assertEntry(
+		"entry under third category", list[11], "user", "package3",
+		"Site Header",
+		"Simple category after complex one",
+		"", "", "", "",
+		"Description",
+		"",
+	)
+
+	assertEntry(
+		"entry under section", list[15], "user", "package1",
+		"Site Header",
+		"Category with two sections",
+		"", "", "", "",
+		"Section 2 as description",
+		"",
+	)
+
+	assertEntry(
+		"entry under list section", list[19], "user", "package2",
+		"Site Header",
+		"Category with list sections",
+		"", "", "", "",
+		"Common description",
+		"Section 1 as list item",
+	)
+
+	assertEntry(
+		"entry under second simple cat", list[26], "user", "package3",
+		"Site Header",
+		"Simple category after complex one",
+		"", "", "", "",
+		"Description",
+		"",
+	)
+
+	assertEntry(
+		"entry with broken indentation", list[30], "user", "package4",
+		"Site Header",
+		"Category with broken indentation",
+		"", "", "", "",
+		"Description",
+		"",
+	)
+
+	assertEntry(
+		"entry after unparsed one", list[31], "user", "package1",
+		"Another FIRST LEVEL header",
+		"Category",
+		"Subcategory",
+		"", "", "", "", "",
+	)
+
 }

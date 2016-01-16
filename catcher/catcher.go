@@ -142,7 +142,7 @@ func MdRepoItem(text string) (username string, reponame string, ok bool) {
 type RepoEntry struct {
 	Username string
 	Reponame string
-	Titles   []string
+	Titles   [8]string
 }
 
 type RepoList []*RepoEntry
@@ -162,13 +162,7 @@ func ReadRepoList(r io.Reader) (list RepoList, err error) {
 		}
 
 		if user, name, ok := MdRepoItem(line); ok && isMdListItem(line) {
-			titles := make([]string, 0, len(titlesMap))
-			for _, t := range titlesMap {
-				if t != "" {
-					titles = append(titles, t)
-				}
-			}
-			list = append(list, &RepoEntry{user, name, titles})
+			list = append(list, &RepoEntry{user, name, titlesMap})
 			continue
 		}
 
