@@ -24,10 +24,6 @@ type RepoEntryBlock struct {
 type RepoCatalog []*RepoEntryBlock
 
 func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
-	var (
-		titlesMap [8]string
-	)
-
 	block := &RepoEntryBlock{}
 	list = RepoCatalog{block}
 	scanner := bufio.NewScanner(r)
@@ -47,16 +43,16 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 		}
 
 		if header, level, ok := MdHeaderItem(line); ok {
-			titlesMap[level-1] = header
-			for i := level; i < len(titlesMap); i++ {
-				titlesMap[i] = ""
-			}
 			if len(block.Entries) > 0 {
-				block = &RepoEntryBlock{Titles: titlesMap}
+				block = &RepoEntryBlock{}
 				list = append(list, block)
-			} else {
-				block.Titles = titlesMap
 			}
+
+			block.Titles[level-1] = header
+			for i := level; i < len(block.Titles); i++ {
+				block.Titles[i] = ""
+			}
+
 			continue
 		}
 

@@ -112,9 +112,9 @@ func TestRepoListParsing(t *testing.T) {
 			len(b.Titles), len(titles),
 		)
 		for i, _ := range titles {
-			assert(t,
-				fmt.Sprintf("%v's %dth title must be %v", what, i, titles[i]),
-				b.Titles[i] == titles[i],
+			expect(t,
+				fmt.Sprintf("%v's %dth title must be correct", what, i),
+				b.Titles[i], titles[i],
 			)
 		}
 	}
@@ -130,7 +130,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertBlock(
 		"block under subheader", list[1], 3,
-		"Site Header",
+		"",
 		"Category with subheaders",
 		"Subheader 1",
 		"", "", "",
@@ -140,7 +140,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertBlock(
 		"block under third category", list[3], 3,
-		"Site Header",
+		"",
 		"Simple category after complex one",
 		"", "", "", "",
 		"Description",
@@ -149,16 +149,14 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertBlock(
 		"block under section", list[5], 3,
-		"Site Header",
-		"Category with two sections",
-		"", "", "", "",
+		"", "", "", "", "", "",
 		"Section 2 as description",
 		"",
 	)
 
 	assertBlock(
 		"block under list section", list[6], 3,
-		"Site Header",
+		"",
 		"Category with list sections",
 		"", "", "", "",
 		"Common description",
@@ -167,7 +165,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertBlock(
 		"block under second simple cat", list[8], 3,
-		"Site Header",
+		"",
 		"Simple category after complex one",
 		"", "", "", "",
 		"Description",
@@ -176,7 +174,7 @@ func TestRepoListParsing(t *testing.T) {
 
 	assertBlock(
 		"block with broken indentation", list[9], 4,
-		"Site Header",
+		"",
 		"Category with broken indentation",
 		"", "", "", "",
 		"Description",
