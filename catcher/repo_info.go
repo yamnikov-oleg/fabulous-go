@@ -4,14 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
 var (
 	HttpClient = &http.Client{}
 	// No trailing slash
-	GithubApiUrl = "https://api.github.com"
+	GithubApiUrl   = "https://api.github.com"
+	GithubUsername string
+	GithubPassword string
 )
+
+func init() {
+	GithubUsername = os.Getenv("GITHUB_USERNAME")
+	GithubPassword = os.Getenv("GITHUB_PASSWORD")
+}
 
 func RetrieveJson(url string, outData interface{}) error {
 	// Form a request
@@ -20,6 +28,7 @@ func RetrieveJson(url string, outData interface{}) error {
 		return err
 	}
 	req.Header.Add("Accept", "application/vnd.github.v3+json")
+	req.SetBasicAuth(GithubUsername, GithubPassword)
 
 	// Perform the request
 	resp, err := HttpClient.Do(req)
@@ -27,7 +36,13 @@ func RetrieveJson(url string, outData interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusServiceUnavailable {
+
+	if resp.StatusCode == http.StatusAccepted {
+		time.Sleep(1 * time.Second)
+		return RetrieveJson(url, outData)
+	}
+
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("`GET %v` -> status code not OK (%v)", url, resp.Status)
 	}
 

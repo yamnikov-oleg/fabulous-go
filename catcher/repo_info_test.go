@@ -47,9 +47,38 @@ func TestRetrieveJson(t *testing.T) {
 	err = RetrieveJson(GithubApiUrl+"/url", new(int))
 	assert(t, "Error must be non-nil", err != nil)
 
-	setupErrorServer(http.StatusAccepted, 12)
+	retry := false
+	f := func(w http.ResponseWriter, r *http.Request) {
+		if retry {
+			w.Write([]byte("12"))
+		} else {
+			w.WriteHeader(http.StatusAccepted)
+			retry = true
+		}
+	}
+	server := httptest.NewServer(http.HandlerFunc(f))
+	GithubApiUrl = server.URL
+
 	err = RetrieveJson(GithubApiUrl+"/url", new(int))
 	assert(t, "Error must be nil", err == nil)
+	assert(t, "Client must retry connection after `202 Accepted`", retry)
+
+	GithubUsername = "username"
+	GithubPassword = "qwerty"
+
+	reqUsername, reqPassword, reqAuth := "", "", false
+	f = func(w http.ResponseWriter, r *http.Request) {
+		reqUsername, reqPassword, reqAuth = r.BasicAuth()
+		w.Write([]byte("12"))
+	}
+	server = httptest.NewServer(http.HandlerFunc(f))
+	GithubApiUrl = server.URL
+
+	err = RetrieveJson(GithubApiUrl+"/url", new(int))
+	assert(t, "Error must be nil", err == nil)
+	assert(t, "Client must be authorized", reqAuth)
+	expect(t, "Client must provice correct username", reqUsername, GithubUsername)
+	expect(t, "Client must provice correct password", reqPassword, GithubPassword)
 }
 
 func TestRepoRequest(t *testing.T) {
