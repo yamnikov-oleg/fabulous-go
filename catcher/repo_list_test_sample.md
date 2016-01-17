@@ -84,6 +84,8 @@ More extra text [A link](https://url.com/url/path). And more.
 *Description*
 
 * [package_1](https://github.com/user/package_1) - Description to a package.
+* [broken](https://notgithub.com/user/package_1) - Should not be parsed.
+* [broken](https://github.com/user/package_1/tree) - Should not be parsed.
 * [package_2](https://github.com/user/package_2) - Description to another package.
 * [package_3](https://github.com/user/package_3) - More text!
 

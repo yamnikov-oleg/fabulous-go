@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	MdRepoLinkRegexp = regexp.MustCompile(`\(https?:\/\/github.com\/([\w_.-]+)\/([\w_.-]+)\)`)
+	MdRepoLinkRegexp    = regexp.MustCompile(`\(https?:\/\/github.com\/([\w_.-]+)\/([\w_.-]+)\)`)
+	MdLabeledLinkRegexp = regexp.MustCompile(`\[[^\]\[]+\]\([^\(\)]+\)`)
 )
 
 type RepoEntry struct {
@@ -43,7 +44,7 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 			continue
 		}
 
-		if header, level, ok := MdHeaderItem(line); ok {
+		if header, level, ok := MdHeaderItem(line); ok && !mdStartsWithLink(header) {
 			if len(block.Entries) > 0 {
 				block = &RepoEntryBlock{}
 				list = append(list, block)
@@ -61,6 +62,18 @@ func ReadRepoCatalog(r io.Reader) (list RepoCatalog, err error) {
 
 	err = scanner.Err()
 	return
+}
+
+// Check whether text starts with an md link
+func mdStartsWithLink(text string) bool {
+	ind := MdLabeledLinkRegexp.FindIndex([]byte(text))
+	if len(ind) == 0 {
+		return false
+	}
+	if ind[0] != 0 {
+		return false
+	}
+	return true
 }
 
 func MdHeaderItem(text string) (header string, lvl int, ok bool) {
