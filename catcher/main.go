@@ -58,16 +58,23 @@ func main() {
 
 	for i, block := range catalog {
 		fmt.Printf("Composing data for block [%v/%v]", i+1, len(catalog))
-		for _, entry := range block.Entries {
+
+		tmpEntries := block.Entries
+		block.Entries = make([]*RepoEntry, 0, len(tmpEntries))
+		for _, entry := range tmpEntries {
 			fmt.Print(".")
 			err := ComposeTemplateData(entry)
 			if err != nil {
 				fmt.Println()
-				fatal(err)
+				fmt.Println(err)
+				fmt.Println("Skipping it.")
+			} else {
+				block.Entries = append(block.Entries)
 			}
 			// Rate limit
 			time.Sleep(2 * time.Second)
 		}
+
 		fmt.Println()
 	}
 
