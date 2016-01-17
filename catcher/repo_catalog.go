@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	MdRepoLinkRegexp = regexp.MustCompile(`\(https?:\/\/github.com\/([\w_-]+)\/([\w_-]+)\)`)
+	MdRepoLinkRegexp = regexp.MustCompile(`\(https?:\/\/github.com\/([\w_.-]+)\/([\w_.-]+)\)`)
 )
 
 type RepoEntry struct {
