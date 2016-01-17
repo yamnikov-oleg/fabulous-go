@@ -69,7 +69,7 @@ func main() {
 				fmt.Println(err)
 				fmt.Println("Skipping it.")
 			} else {
-				block.Entries = append(block.Entries)
+				block.Entries = append(block.Entries, entry)
 			}
 			// Rate limit
 			time.Sleep(2 * time.Second)
