@@ -88,6 +88,7 @@ func TestRepoRequest(t *testing.T) {
 	)
 	repo.StargazersCount = 25565
 	repo.Name = "somerepo"
+	repo.Description = "Some desc"
 	repo.Owner.Login = "someuser"
 
 	setupApiServer(&requestedUrl, repo)
@@ -120,6 +121,12 @@ func TestRepoRequest(t *testing.T) {
 		"Repo name must be retrieved correctly",
 		repo2.Name,
 		repo.Name,
+	)
+
+	expect(t,
+		"Repo description must be retrieved correctly",
+		repo2.Description,
+		repo.Description,
 	)
 
 	expect(t,

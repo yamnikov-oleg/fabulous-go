@@ -56,8 +56,9 @@ func RetrieveJson(url string, outData interface{}) error {
 }
 
 type RepoInfo struct {
-	Name  string `json:"name"`
-	Owner struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Owner       struct {
 		Login string `json:"login"`
 	} `json:"owner"`
 	StargazersCount int `json:"stargazers_count"`
