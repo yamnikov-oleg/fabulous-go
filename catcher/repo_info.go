@@ -32,6 +32,7 @@ func RetrieveJson(url string, outData interface{}) error {
 
 	// Perform the request
 	resp, err := HttpClient.Do(req)
+	// TODO: handle timeouts
 	if err != nil {
 		return err
 	}
