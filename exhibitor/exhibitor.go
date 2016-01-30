@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -70,6 +71,34 @@ func main() {
 			}
 
 			return ""
+		},
+		"header_link": func(t string) string {
+			buf := []byte(t)
+			buf = bytes.ToLower(buf)
+
+			link := make([]byte, 0, len(buf))
+			link = append(link, '#')
+
+			for _, b := range buf {
+				if b >= 'a' && b <= 'z' {
+					link = append(link, b)
+					continue
+				}
+				if b == ' ' || b == '-' {
+					link = append(link, '-')
+					continue
+				}
+			}
+
+			return string(link)
+		},
+		"times": func(count int, s string) string {
+			buf := make([]byte, 0, len(s)*count)
+			b := []byte(s)
+			for i := 0; i < count; i++ {
+				buf = append(buf, b...)
+			}
+			return string(buf)
 		},
 	}
 
