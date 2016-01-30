@@ -89,6 +89,10 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
+	if len(data) == 0 {
+		fatal("No data was read. There must be an error")
+	}
+	data[0].Titles[0] = "Fabulous Go"
 
 	fmt.Println("Rendering template into file...")
 	outFile, err := os.Create(outFilename)
