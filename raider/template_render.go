@@ -3,6 +3,7 @@ package main
 type TmplRepoData struct {
 	Stars            int
 	CommitsLastMonth int
+	Description      string
 }
 
 func ComposeTemplateData(e *RepoEntry) error {
@@ -13,6 +14,7 @@ func ComposeTemplateData(e *RepoEntry) error {
 		return err
 	}
 	data.Stars = info.StargazersCount
+	data.Description = info.Description
 
 	stat, err := info.RequestParticipationStats()
 	if err != nil {

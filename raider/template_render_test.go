@@ -17,6 +17,7 @@ func TestTemplateDataComposition(t *testing.T) {
 	info.Owner.Login = entry.Username
 	info.Name = entry.Reponame
 	info.StargazersCount = 909
+	info.Description = "The little repo"
 
 	statsUrl := infoUrl + "/stats/participation"
 	statsRequested := false
@@ -55,4 +56,5 @@ func TestTemplateDataComposition(t *testing.T) {
 
 	expect(t, "Stars count must be correct", entry.TmplData.Stars, info.StargazersCount)
 	expect(t, "Commits count must be correct", entry.TmplData.CommitsLastMonth, commitsLastMonth)
+	expect(t, "Description must be correct", entry.TmplData.Description, info.Description)
 }
