@@ -1,1 +1,5 @@
 *.json
+bin/*
+raider/raider
+exhibitor/exhibitor
+exhibitor/README.md
