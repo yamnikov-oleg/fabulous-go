@@ -1,5 +1,5 @@
 *.json
-bin/*
+tmp/
 raider/raider
 exhibitor/exhibitor
 exhibitor/README.md

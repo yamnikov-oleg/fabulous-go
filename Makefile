@@ -1,5 +1,5 @@
 SHELL=/bin/bash
-WD=./bin
+WD=./tmp
 RAIDER_BIN=$(WD)/raider
 RAIDER_DIR=./raider
 EXHIBITOR_BIN=$(WD)/exhibitor
