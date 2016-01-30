@@ -1,11 +1,6 @@
-echo -n "GitHub username: "
-read name
-
-echo -n "GitHub password: "
-read -s pass
+read -p "GitHub username: " GITHUB_USERNAME
+read -p "GitHub password: " -s GITHUB_PASSWORD
 echo
-
-go build
-export GITHUB_USERNAME=$name
-export GITHUB_PASSWORD=$pass
+export GITHUB_USERNAME
+export GITHUB_PASSWORD
 ./raider
