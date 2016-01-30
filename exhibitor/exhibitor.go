@@ -12,6 +12,7 @@ import (
 type TmplRepoData struct {
 	Stars            int
 	CommitsLastMonth int
+	Description      string
 }
 
 type RepoEntry struct {
