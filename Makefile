@@ -27,7 +27,7 @@ prepare_exhibitor:
 	cp $(EXHIBITOR_DIR)/$(TEMPLATE) $(WD)/$(TEMPLATE)
 
 run_exhibitor:
-	cd $(WD) && ../$(EXHIBITOR_BIN)
+	cd $(WD) && ../$(EXHIBITOR_BIN) -sort stars
 	cp $(WD)/$(README) ./$(README)
 
 cleanup_exhibitor:

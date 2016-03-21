@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"text/template"
 )
@@ -20,6 +21,10 @@ type RepoEntry struct {
 	Username string
 	Reponame string
 	TmplData TmplRepoData
+}
+
+func (e *RepoEntry) Name() string {
+	return e.Username + "/" + e.Reponame
 }
 
 type RepoEntryBlock struct {
@@ -39,6 +44,38 @@ func init() {
 	flag.StringVar(&jsonFilename, "j", "repos.json", "File containing json data to pass to template")
 	flag.StringVar(&tmplFilename, "t", "TEMPLATE.md", "Template file")
 	flag.StringVar(&outFilename, "o", "README.md", "Output file")
+}
+
+type ByName []RepoEntry
+
+func (l ByName) Len() int           { return len(l) }
+func (l ByName) Less(i, j int) bool { return l[i].Name() < l[j].Name() }
+func (l ByName) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+
+type ByReponame []RepoEntry
+
+func (l ByReponame) Len() int           { return len(l) }
+func (l ByReponame) Less(i, j int) bool { return l[i].Reponame < l[j].Reponame }
+func (l ByReponame) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+
+type ByStarsDesc []RepoEntry
+
+func (l ByStarsDesc) Len() int           { return len(l) }
+func (l ByStarsDesc) Less(i, j int) bool { return l[i].TmplData.Stars > l[j].TmplData.Stars }
+func (l ByStarsDesc) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+
+type SortModeFunc func([]RepoEntry) sort.Interface
+
+var SortModes = map[string]SortModeFunc{
+	"name":     func(l []RepoEntry) sort.Interface { return ByName(l) },
+	"reponame": func(l []RepoEntry) sort.Interface { return ByReponame(l) },
+	"stars":    func(l []RepoEntry) sort.Interface { return ByStarsDesc(l) },
+}
+
+var Smode string
+
+func init() {
+	flag.StringVar(&Smode, "sort", "name", "Sort repositories by `field` inside each repo block.\n\tPossible values: 'name', 'reponame', 'stars'.")
 }
 
 func fatal(err interface{}) {
@@ -122,6 +159,14 @@ func main() {
 		fatal("No data was read. There must be an error")
 	}
 	data[0].Titles[0] = "Packages"
+
+	sortFunc, ok := SortModes[Smode]
+	if !ok {
+		fatalf("No sort mode %q defined", Smode)
+	}
+	for _, b := range data {
+		sort.Sort(sortFunc(b.Entries))
+	}
 
 	fmt.Println("Rendering template into file...")
 	outFile, err := os.Create(outFilename)
